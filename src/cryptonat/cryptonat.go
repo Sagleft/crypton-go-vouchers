@@ -2,6 +2,7 @@ package cryptonat
 
 import (
 	"errors"
+	"math"
 
 	//utopiago "gopkg.in/sagleft/utopialib-go.v2"
 	utopiago "./utopiago" //for dev version
@@ -9,7 +10,7 @@ import (
 
 //VoucherData contains voucher data ^ↀᴥↀ^
 type VoucherData struct {
-	Status           string  `json:"status"`
+	Status           string  `json:"status"` //"pending" or "done"
 	CreatedTimestamp string  `json:"created"`
 	Amount           float64 `json:"amount"`
 	Comments         string  `json:"comments"`
@@ -19,7 +20,7 @@ type VoucherData struct {
 
 //ActivationData contains voucher activation data (=ↀωↀ=)
 type ActivationData struct {
-	Status          string  `json:"status"`
+	Status          string  `json:"status"` //"pending" or "done"
 	ReferenceNumber int64   `json:"referenceNumber"`
 	Amount          float64 `json:"amount"`
 }
@@ -63,8 +64,30 @@ func (h *Handler) CheckVoucherActivation(referenceNumber int64) (ActivationData,
 
 //CheckVoucherStatus - checks the voucher data, its activation status
 func (h *Handler) CheckVoucherStatus(referenceNumber int64) (VoucherData, error) {
-	//TODO
-	return VoucherData{}, nil
+	voucherDataRaw, err := h.Client.GetFinanceHistory()
+	if err != nil {
+		return VoucherData{}, err
+	}
+	voucherDataMap, ok := voucherDataRaw.(map[string]interface{})
+	if !ok {
+		return VoucherData{}, errors.New("can't find voucher data in client response")
+	}
+	//TODO: check fields exists
+	result := VoucherData{
+		CreatedTimestamp: voucherDataMap["created"].(string),
+		Amount:           voucherDataMap["amount"].(float64),
+		Comments:         voucherDataMap["comments"].(string),
+		Direction:        int(math.Round(voucherDataMap["direction"].(float64))),
+		TransactionID:    voucherDataMap["id"].(string),
+	}
+	if voucherDataMap["state"] == "-1" || voucherDataMap["state"] == -1 {
+		result.Status = "pending"
+	}
+	if voucherDataMap["state"] == "0" || voucherDataMap["state"] == 0 {
+		result.Status = "done"
+	}
+
+	return result, nil
 }
 
 //GetVoucherAmount - asks for the amount of the voucher if it has already been activated
