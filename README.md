@@ -17,13 +17,21 @@ Usage
 -------
 
 ```go
-//TODO
+cryptonat := cryptonat.Handler{Client: utopiaClient}
+```
+
+or
+
+```go
+handler := cryptonat.Handler{}
+handler.SetClient(utopiaClient)
 ```
 
 Then try activating the voucher:
 
 ```go
-//TODO
+data := handler.ActivateVoucher("UTP-P3FH-OJQZ-7XWI-CAVT-LYDW")
+fmt.Println(data)
 ```
 
 response example:
@@ -39,7 +47,9 @@ response example:
 check voucher status by reference number:
 
 ```go
-//TODO
+referenceNumber := "367404A95932624C284B16AF1C1EDF1BB0F9CDCA1CC5136B167378BBF933FAD8"
+voucherStatusData := handler.CheckVoucherStatus(referenceNumber)
+fmt.Println(voucherStatusData)
 ```
 
 response example:
