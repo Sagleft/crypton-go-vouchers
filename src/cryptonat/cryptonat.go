@@ -1,7 +1,10 @@
 package cryptonat
 
 import (
-	utopiago "gopkg.in/sagleft/utopialib-go.v1"
+	"errors"
+
+	//utopiago "gopkg.in/sagleft/utopialib-go.v2"
+	utopiago "./utopiago" //for dev version
 )
 
 //VoucherData contains voucher data ^ↀᴥↀ^
@@ -17,7 +20,7 @@ type VoucherData struct {
 //ActivationData contains voucher activation data (=ↀωↀ=)
 type ActivationData struct {
 	Status          string  `json:"status"`
-	ReferenceNumber int     `json:"referenceNumber"`
+	ReferenceNumber int64   `json:"referenceNumber"`
 	Amount          float64 `json:"amount"`
 }
 
@@ -28,26 +31,45 @@ type Handler struct {
 
 //SetClient - connects another Utopia client to Handler
 func (h *Handler) SetClient(client *utopiago.UtopiaClient) error {
-	//TODO: check client connection
+	if !client.CheckClientConnection() {
+		return errors.New("client disconnected")
+	}
 	h.Client = client
 	return nil
 }
 
 //ActivateVoucher - an attempt to activate a voucher and get data about it
 func (h *Handler) ActivateVoucher(voucherCode string) (ActivationData, error) {
-	//TODO
-	return ActivationData{}, nil
+	referenceNumber, err := h.Client.UseVoucher(voucherCode)
+	if err != nil {
+		return ActivationData{}, err
+	}
+	return h.CheckVoucherActivation(referenceNumber)
+}
+
+//CheckVoucherActivation - lite version of CheckVoucherStatus
+func (h *Handler) CheckVoucherActivation(referenceNumber int64) (ActivationData, error) {
+	data, err := h.CheckVoucherStatus(referenceNumber)
+	if err != nil {
+		return ActivationData{}, err
+	}
+	//TODO: add fields exists check
+	return ActivationData{
+		Status:          data.Status,
+		ReferenceNumber: referenceNumber,
+		Amount:          data.Amount,
+	}, nil
 }
 
 //CheckVoucherStatus - checks the voucher data, its activation status
-func (h *Handler) CheckVoucherStatus(referenceNumber int) (VoucherData, error) {
+func (h *Handler) CheckVoucherStatus(referenceNumber int64) (VoucherData, error) {
 	//TODO
 	return VoucherData{}, nil
 }
 
 //GetVoucherAmount - asks for the amount of the voucher if it has already been activated
 func (h *Handler) GetVoucherAmount(referenceNumber int) (float64, error) {
-	//TOOD
+	//result := ActivationData{}
 	return 0, nil
 }
 
