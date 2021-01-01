@@ -104,9 +104,12 @@ func (h *Handler) CheckVoucherStatus(referenceNumber int64) (VoucherData, error)
 }
 
 //GetVoucherAmount - asks for the amount of the voucher if it has already been activated
-func (h *Handler) GetVoucherAmount(referenceNumber int) (float64, error) {
-	//result := ActivationData{}
-	return 0, nil
+func (h *Handler) GetVoucherAmount(referenceNumber int64) (float64, error) {
+	vData, err := h.CheckVoucherStatus(referenceNumber)
+	if err != nil {
+		return 0, err
+	}
+	return vData.Amount, nil
 }
 
 //CreateVoucher - an attempt to create a voucher for a given amount
