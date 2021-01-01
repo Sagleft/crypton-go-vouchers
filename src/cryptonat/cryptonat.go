@@ -4,7 +4,7 @@ import (
 	"errors"
 	"math"
 
-	utopiago "gopkg.in/sagleft/utopialib-go.v2"
+	utopiago "gopkg.in/sagleft/utopialib-go.v3"
 	//utopiago "./utopiago" //for dev version
 )
 
