@@ -4,13 +4,13 @@ Crypton Donation Library used to work with vouchers written in Go
 ## Installation
 
 ```bash
-go get github.com/Sagleft/crypton-go-vouchers
+go get github.com/Sagleft/crypton-go-vouchers/cryptonat
 ```
 
 then
 
 ```go
-import "github.com/Sagleft/crypton-go-vouchers"
+import "github.com/Sagleft/crypton-go-vouchers/cryptonat"
 ```
 
 Usage
@@ -56,6 +56,11 @@ response example:
 ```
 
 ![scheme](https://github.com/Sagleft/crypton-go-vouchers/raw/main/assets/voucher_activation.png)
+
+# How can this be used?
+* creating a web service that processes client requests;
+* creation of a payment service;
+* development of a bot for the channel.
 
 License
 -------
