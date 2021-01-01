@@ -62,18 +62,31 @@ func (h *Handler) CheckVoucherActivation(referenceNumber int64) (ActivationData,
 	}, nil
 }
 
+func (h *Handler) getVoucherDataMap(referenceNumber int64) (map[string]interface{}, error) {
+	voucherDataRaw, err := h.Client.GetFinanceHistory("ALL_VOUCHERS", referenceNumber)
+	if err != nil {
+		return nil, err
+	}
+	if len(voucherDataRaw) == 0 {
+		return nil, errors.New("finance history not found")
+	}
+	firstElement := voucherDataRaw[0]
+
+	voucherDataMap, ok := firstElement.(map[string]interface{})
+	if !ok {
+		return nil, errors.New("can't find voucher data in client response")
+	}
+	return voucherDataMap, nil
+}
+
 //CheckVoucherStatus - checks the voucher data, its activation status
 func (h *Handler) CheckVoucherStatus(referenceNumber int64) (VoucherData, error) {
-	voucherDataRaw, err := h.Client.GetFinanceHistory()
+	voucherDataMap, err := h.getVoucherDataMap(referenceNumber)
 	if err != nil {
 		return VoucherData{}, err
 	}
-	voucherDataMap, ok := voucherDataRaw.(map[string]interface{})
-	if !ok {
-		return VoucherData{}, errors.New("can't find voucher data in client response")
-	}
 	//TODO: check fields exists
-	result := VoucherData{
+	resultData := VoucherData{
 		CreatedTimestamp: voucherDataMap["created"].(string),
 		Amount:           voucherDataMap["amount"].(float64),
 		Comments:         voucherDataMap["comments"].(string),
@@ -81,13 +94,13 @@ func (h *Handler) CheckVoucherStatus(referenceNumber int64) (VoucherData, error)
 		TransactionID:    voucherDataMap["id"].(string),
 	}
 	if voucherDataMap["state"] == "-1" || voucherDataMap["state"] == -1 {
-		result.Status = "pending"
+		resultData.Status = "pending"
 	}
 	if voucherDataMap["state"] == "0" || voucherDataMap["state"] == 0 {
-		result.Status = "done"
+		resultData.Status = "done"
 	}
 
-	return result, nil
+	return resultData, nil
 }
 
 //GetVoucherAmount - asks for the amount of the voucher if it has already been activated
