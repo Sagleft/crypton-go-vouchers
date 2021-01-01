@@ -21,7 +21,7 @@ type VoucherData struct {
 //ActivationData contains voucher activation data (=ↀωↀ=)
 type ActivationData struct {
 	Status          string  `json:"status"` //"pending" or "done"
-	ReferenceNumber int64   `json:"referenceNumber"`
+	ReferenceNumber string  `json:"referenceNumber"`
 	Amount          float64 `json:"amount"`
 }
 
@@ -49,7 +49,7 @@ func (h *Handler) ActivateVoucher(voucherCode string) (ActivationData, error) {
 }
 
 //CheckVoucherActivation - lite version of CheckVoucherStatus
-func (h *Handler) CheckVoucherActivation(referenceNumber int64) (ActivationData, error) {
+func (h *Handler) CheckVoucherActivation(referenceNumber string) (ActivationData, error) {
 	data, err := h.CheckVoucherStatus(referenceNumber)
 	if err != nil {
 		return ActivationData{}, err
@@ -62,7 +62,7 @@ func (h *Handler) CheckVoucherActivation(referenceNumber int64) (ActivationData,
 	}, nil
 }
 
-func (h *Handler) getVoucherDataMap(referenceNumber int64) (map[string]interface{}, error) {
+func (h *Handler) getVoucherDataMap(referenceNumber string) (map[string]interface{}, error) {
 	voucherDataRaw, err := h.Client.GetFinanceHistory("ALL_VOUCHERS", referenceNumber)
 	if err != nil {
 		return nil, err
@@ -80,7 +80,7 @@ func (h *Handler) getVoucherDataMap(referenceNumber int64) (map[string]interface
 }
 
 //CheckVoucherStatus - checks the voucher data, its activation status
-func (h *Handler) CheckVoucherStatus(referenceNumber int64) (VoucherData, error) {
+func (h *Handler) CheckVoucherStatus(referenceNumber string) (VoucherData, error) {
 	voucherDataMap, err := h.getVoucherDataMap(referenceNumber)
 	if err != nil {
 		return VoucherData{}, err
@@ -104,7 +104,7 @@ func (h *Handler) CheckVoucherStatus(referenceNumber int64) (VoucherData, error)
 }
 
 //GetVoucherAmount - asks for the amount of the voucher if it has already been activated
-func (h *Handler) GetVoucherAmount(referenceNumber int64) (float64, error) {
+func (h *Handler) GetVoucherAmount(referenceNumber string) (float64, error) {
 	vData, err := h.CheckVoucherStatus(referenceNumber)
 	if err != nil {
 		return 0, err
