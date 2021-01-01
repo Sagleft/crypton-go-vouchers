@@ -1,6 +1,10 @@
 # crypton-go-vouchers
 Crypton Donation Library used to work with vouchers written in Go
 
+[![GoDoc](https://godoc.org/github.com/sagleft/crypton-go-vouchers?status.svg)](https://godoc.org/gopkg.in/sagleft/crypton-go-vouchers.v1)
+[![go-report](https://goreportcard.com/badge/github.com/Sagleft/crypton-go-vouchers)](https://goreportcard.com/report/github.com/Sagleft/crypton-go-vouchers)
+[![Build Status](https://travis-ci.org/sagleft/crypton-go-vouchers.svg?branch=master)](https://travis-ci.org/sagleft/crypton-go-vouchers)
+
 ## Installation
 
 ```bash
