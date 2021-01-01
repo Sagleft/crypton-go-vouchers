@@ -4,8 +4,8 @@ import (
 	"errors"
 	"math"
 
-	//utopiago "gopkg.in/sagleft/utopialib-go.v2"
-	utopiago "./utopiago" //for dev version
+	utopiago "gopkg.in/sagleft/utopialib-go.v2"
+	//utopiago "./utopiago" //for dev version
 )
 
 //VoucherData contains voucher data ^ↀᴥↀ^
@@ -113,9 +113,19 @@ func (h *Handler) GetVoucherAmount(referenceNumber int64) (float64, error) {
 }
 
 //CreateVoucher - an attempt to create a voucher for a given amount
-func (h *Handler) CreateVoucher(float64) error {
-	//TODO
-	return nil
+func (h *Handler) CreateVoucher(amount float64) (ActivationData, error) {
+	accountBalance, err := h.Client.GetBalance()
+	if err != nil {
+		return ActivationData{}, err
+	}
+	if accountBalance < amount {
+		return ActivationData{}, errors.New("not enough balance")
+	}
+	referenceNumber, err := h.Client.CreateVoucher(amount)
+	if err != nil {
+		return ActivationData{}, err
+	}
+	return h.CheckVoucherActivation(referenceNumber)
 }
 
 //GetNetFee - asks for a commission to create a voucher with a specific amount
