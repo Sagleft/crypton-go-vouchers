@@ -55,7 +55,7 @@ response example:
 }
 ```
 
-![scheme](https://github.com/Sagleft/crypton-go-vouchers/raw/master/assets/voucher_activation.png)
+![scheme](https://github.com/Sagleft/crypton-go-vouchers/raw/main/assets/voucher_activation.png)
 
 License
 -------
